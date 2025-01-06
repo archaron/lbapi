@@ -1,5 +1,6 @@
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/archaron/lbapi/blob/master/README.md)
 [![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/archaron/lbapi/blob/master/README.ru.md)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Farcharon%2Flbapi.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Farcharon%2Flbapi?ref=badge_shield)
 
 [![license](https://img.shields.io/github/license/archaron/lbapi.svg)](https://github.com/archaron/lbapi/blob/master/LICENSE)
 [![PkgGoDev](https://pkg.go.dev/badge/mod/github.com/archaron/lbapi)](https://pkg.go.dev/mod/github.com/archaron/lbapi)
@@ -93,3 +94,7 @@ Events arrive in the channel obtained via the `GetEventsChannel` method. For tes
 
 
 
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Farcharon%2Flbapi.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Farcharon%2Flbapi?ref=badge_large)

@@ -22,4 +22,19 @@ jobs:
           go-version: ${{ matrix.go }}
 
       - name: Test
-        run: go test -v ./...
+        run: |
+          make check
+          make test-race
+          make bench-race
+
+      - name: Coverage
+        run: |
+          make cover
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }} #required
+          file: ./coverage.out
+          fail_ci_if_error: true #optional (default = false)
+

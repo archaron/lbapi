@@ -1,7 +1,7 @@
 [![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/archaron/lbapi/blob/master/README.md)
 [![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/archaron/lbapi/blob/master/README.ru.md)
 
-[![license](https://img.shields.io/github/archaron/lbapi.svg)](https://github.com/archaron/lbapi/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/archaron/lbapi.svg)](https://github.com/archaron/lbapi/blob/master/LICENSE)
 [![Godoc](https://godoc.org/github.com/archaron/lbapi?status.svg)](https://godoc.org/github.com/archaron/lbapi)
 [![Build Status](https://travis-ci.org/archaron/lbapi.svg?branch=master)](https://travis-ci.org/archaron/lbapi)
 [![Coverage Status](https://coveralls.io/repos/github/archaron/lbapi/badge.svg?branch=master)](https://coveralls.io/github/archaron/lbapi?branch=master)

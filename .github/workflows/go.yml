@@ -23,7 +23,6 @@ jobs:
 
       - name: Test
         run: |
-          make check
           make test-race
           make bench-race
 

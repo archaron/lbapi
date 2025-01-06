@@ -7,9 +7,6 @@
 [![Coverage Status](https://coveralls.io/repos/github/archaron/lbapi/badge.svg?branch=master)](https://coveralls.io/github/archaron/lbapi?branch=master)
 [![GitHub tag](https://img.shields.io/github/tag/archaron/lbapi.svg?maxAge=86400)](https://github.com/archaron/lbapi)
 
-
-LBApi
-========
 LBApi
 ========
 Implementation of interaction with the LANBilling billing system via the jRPC protocol.

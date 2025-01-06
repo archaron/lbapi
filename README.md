@@ -9,7 +9,7 @@
 
 LBApi
 ========
-Implementation of interaction with the LANBilling billing system via the jRPC protocol.
+Implementation of interaction with the LANBilling billing system via the JSON-RPC protocol.
 This protocol is used by the system to communicate between agents/administrative interface and the system core.
 Tested on LANBilling 2.0 build 2.0.39.
 

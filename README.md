@@ -4,7 +4,7 @@
 [![license](https://img.shields.io/github/license/archaron/lbapi.svg)](https://github.com/archaron/lbapi/blob/main/LICENSE)
 [![PkgGoDev](https://pkg.go.dev/badge/mod/github.com/archaron/lbapi)](https://pkg.go.dev/mod/github.com/archaron/lbapi)
 [![GitHub Workflow Status](https://github.com/archaron/lbapi/actions/workflows/go.yml/badge.svg)](https://github.com/archaron/lbapi/actions/workflows/go.yml)
-[![Go Report Card](https://goreportcard.com/badge/github.com/archaron/lbapi/)](https://goreportcard.com/report/github.com/archaron/lbapi/)
+[![Go Report Card](https://goreportcard.com/badge/github.com/archaron/lbapi)](https://goreportcard.com/report/github.com/archaron/lbapi)
 ![Go version](https://img.shields.io/github/go-mod/go-version/archaron/lbapi?style=flat&label=Go%20%3E%3D)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Farcharon%2Flbapi.svg?type=shield&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Farcharon%2Flbapi?ref=badge_shield)
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Farcharon%2Flbapi.svg?type=shield&issueType=security)](https://app.fossa.com/projects/git%2Bgithub.com%2Farcharon%2Flbapi?ref=badge_shield)

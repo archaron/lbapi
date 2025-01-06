@@ -1,7 +1,7 @@
-[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/archaron/lbapi/blob/master/README.md)
-[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/archaron/lbapi/blob/master/README.ru.md)
+[![en](https://img.shields.io/badge/lang-en-red.svg)](https://github.com/archaron/lbapi/blob/main/README.md)
+[![ru](https://img.shields.io/badge/lang-ru-green.svg)](https://github.com/archaron/lbapi/blob/main/README.ru.md)
 
-[![license](https://img.shields.io/github/license/archaron/lbapi.svg)](https://github.com/archaron/lbapi/blob/master/LICENSE)
+[![license](https://img.shields.io/github/license/archaron/lbapi.svg)](https://github.com/archaron/lbapi/blob/main/LICENSE)
 [![PkgGoDev](https://pkg.go.dev/badge/mod/github.com/archaron/lbapi)](https://pkg.go.dev/mod/github.com/archaron/lbapi)
 [![GitHub Workflow Status](https://github.com/archaron/lbapi/actions/workflows/go.yml/badge.svg)](https://github.com/archaron/lbapi/actions/workflows/go.yml)
 [![Go Report Card](https://goreportcard.com/badge/github.com/archaron/lbapi/)](https://goreportcard.com/report/github.com/archaron/lbapi/)

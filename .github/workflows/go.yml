@@ -30,10 +30,10 @@ jobs:
         run: |
           make cover
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }} #required
-          file: ./coverage.out
-          fail_ci_if_error: true #optional (default = false)
+#      - name: Upload coverage to Codecov
+#        uses: codecov/codecov-action@v3
+#        with:
+#          token: ${{ secrets.CODECOV_TOKEN }} #required
+#          file: ./coverage.out
+#          fail_ci_if_error: true #optional (default = false)
 

@@ -3,6 +3,7 @@ package lbapi
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"net"
@@ -15,12 +16,34 @@ import (
 	"github.com/archaron/lbapi/types"
 )
 
+var (
+	ErrNotConnected = errors.New("not connected to LANBilling")
+)
+
+// rpcClient wraps jrpc2.Client, returning ErrNotConnected when disconnected.
+type rpcClient struct{ c *jrpc2.Client }
+
+// CallResult delegates to jrpc2.Client or returns ErrNotConnected if nil.
+func (r *rpcClient) CallResult(ctx context.Context, method string, params, result any) error {
+	if r == nil || r.c == nil {
+		return ErrNotConnected
+	}
+	return r.c.CallResult(ctx, method, params, result)
+}
+
+func (r *rpcClient) Close() error {
+	if r == nil || r.c == nil {
+		return nil
+	}
+	return r.c.Close()
+}
+
 type (
 	Client struct {
 		cfg ClientConfig
 		log *slog.Logger
 
-		client     *jrpc2.Client
+		client     *rpcClient
 		connection net.Conn
 
 		reconnectTimer         *time.Timer
@@ -96,7 +119,7 @@ func defaultConnector(api *Client) {
 		}
 
 		if api.client == nil {
-			api.client = jrpc2.NewClient(channel.Line(conn, conn), &jrpc2.ClientOptions{
+			api.client = &rpcClient{c: jrpc2.NewClient(channel.Line(conn, conn), &jrpc2.ClientOptions{
 				Logger: func(text string) {
 					api.log.Debug("API: " + text)
 				},
@@ -104,7 +127,7 @@ func defaultConnector(api *Client) {
 				OnCallback: api.onCallback,
 				OnCancel:   api.hookOnCancel,
 				OnStop:     api.hookOnStop,
-			})
+			})}
 		}
 
 		if api.cfg.ReconnectPeriod > 0 && api.reconnectTimer == nil {
@@ -256,7 +279,9 @@ func (api *Client) Close() error {
 	}
 
 	api.connection = nil
-	api.client = nil
+	if api.client != nil {
+		api.client.c = nil
+	}
 	if api.eventsChannel != nil {
 		close(api.eventsChannel)
 		api.eventsChannel = nil

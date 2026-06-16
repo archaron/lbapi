@@ -61,7 +61,7 @@ func testConnector(t *testing.T, m handler.Map, emulateEvents []events.LBEvent, 
 				}()
 			}
 
-			api.client = srv.Client
+			api.client = &rpcClient{c: srv.Client}
 
 			return nil
 		}

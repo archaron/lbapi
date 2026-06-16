@@ -7,10 +7,10 @@ import (
 	"github.com/archaron/lbapi/types"
 )
 
-var getAccountsCountRequest = json.RawMessage(`{"category":0,"count":true,"is_archive":false,"is_template":0}`)
+var getAccountsCountRequest = json.RawMessage(`{"category":0,"count":true,"is_archive":0,"is_template":0}`)
 var getAccountsCountResponse = json.RawMessage(`296`)
 
-var getAccountsRequest = json.RawMessage(`{"category":0,"count":false,"is_archive":false,"is_template":0}`)
+var getAccountsRequest = json.RawMessage(`{"category":0,"count":false,"is_archive":0,"is_template":0}`)
 var getAccountsResponse = json.RawMessage(`[
 	{ "addresses": [  ], "agreements": [  ], "app_id": null, "category": 0, "descr": "", "email": "test1@test.ru", "is_archive": false, "is_default": false, "is_template": 0, "login": "test1", "mobile": "+79795433262", "name": "Тест Тестович Тестовский", "phone": "+798754354354", "sole_proprietor": null, "type": 1, "uid": 2 }, 
 	{ "addresses": [  ], "agreements": [  ], "app_id": null, "category": 0, "descr": "", "email": "test2@test.ru", "is_archive": false, "is_default": false, "is_template": 0, "login": "test2", "mobile": "+79897987987", "name": "Тестов Тест Тестович", "phone": "+798756456465", "sole_proprietor": null, "type": 1, "uid": 3 }

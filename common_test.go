@@ -97,7 +97,7 @@ func mustUnmarshal[T any](t *testing.T, raw json.RawMessage) T {
 func runAPITests(t *testing.T, casesGenerator func(*Client, *APIMux) []APITestCase) {
 	t.Helper()
 	mux := new(APIMux)
-	api := &Client{client: server.NewLocal(mux, nil).Client}
+	api := &Client{client: &rpcClient{c: server.NewLocal(mux, nil).Client}}
 	cases := casesGenerator(api, mux)
 	for _, tt := range cases {
 		t.Run(tt.name, func(t *testing.T) {

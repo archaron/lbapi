@@ -38,16 +38,16 @@ type (
 	}
 
 	ClientConfig struct {
-		Address  string `env:"LB_API_ADDRESS"`  // LanBilling server address
-		Username string `env:"LB_API_USERNAME"` // Agent username
-		Password string `env:"LB_API_PASSWORD"` // Agent password
+		Address  string `env:"LB_API_ADDRESS" yaml:"address" usage:"LANBilling API address"`     // LanBilling server address
+		Username string `env:"LB_API_USERNAME" yaml:"username" usage:"LANBilling API username "` // Agent username
+		Password string `env:"LB_API_PASSWORD" yaml:"password" usage:"LANBilling API password"`  // Agent password
 
-		MaxFails int           `env:"LB_API_MAX_FAILS" default:"5"` // Maximum reconnect fails before fail
-		Timeout  time.Duration `env:"LB_API_TIMEOUT" default:"5s"`  // (re)Connect timeout
+		MaxFails int           `env:"LB_API_MAX_FAILS" yaml:"max_fails" default:"5"` // Maximum reconnect fails before fail
+		Timeout  time.Duration `env:"LB_API_TIMEOUT" yaml:"timeout" default:"5s"`    // (re)Connect timeout
 
 		// If set, client will periodically ping server to check if it is available,
 		// if MaxFails pings missed, we'll try to reconnect and resubscribe all events
-		ReconnectPeriod time.Duration `env:"LB_API_RECONNECT_PERIOD" default:"10s"`
+		ReconnectPeriod time.Duration `env:"LB_API_RECONNECT_PERIOD" yaml:"reconnect_period" default:"10s"`
 	}
 
 	ClientOption func(*Client)

@@ -8,8 +8,8 @@ import (
 
 type (
 	SetLastContactRequest struct {
-		AgentId     int    `json:"agent_id"`
-		LastContact string `json:"lastcontact"`
+		AgentId     int           `json:"agent_id"`
+		LastContact *types.LBTime `json:"lastcontact"`
 	}
 )
 

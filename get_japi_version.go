@@ -18,6 +18,10 @@ type (
 	}
 )
 
+func (g GetJAPIVersionResponse) String() string {
+	return g.Version
+}
+
 func (GetJAPIVersionRequest) Method() string {
 	return "getJAPIVersion"
 }

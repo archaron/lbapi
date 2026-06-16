@@ -23,8 +23,9 @@ type (
 		client     *jrpc2.Client
 		connection net.Conn
 
-		reconnectTimer *time.Timer
-		fails          int
+		reconnectTimer         *time.Timer
+		fails                  int
+		currentReconnectPeriod time.Duration
 
 		connector func(context.Context) error
 
@@ -42,12 +43,18 @@ type (
 		Username string `env:"LB_API_USERNAME" yaml:"username" usage:"LANBilling API username "` // Agent username
 		Password string `env:"LB_API_PASSWORD" yaml:"password" usage:"LANBilling API password"`  // Agent password
 
-		MaxFails int           `env:"LB_API_MAX_FAILS" yaml:"max_fails" default:"5"` // Maximum reconnect fails before fail
+		MaxFails int           `env:"LB_API_MAX_FAILS" yaml:"max_fails" default:"5"` // Maximum reconnect fails before reconnect
 		Timeout  time.Duration `env:"LB_API_TIMEOUT" yaml:"timeout" default:"5s"`    // (re)Connect timeout
 
-		// If set, client will periodically ping server to check if it is available,
-		// if MaxFails pings missed, we'll try to reconnect and resubscribe all events
+		// Periodic ping interval to check if server is reachable.
 		ReconnectPeriod time.Duration `env:"LB_API_RECONNECT_PERIOD" yaml:"reconnect_period" default:"10s"`
+
+		// Reconnect backoff configuration.
+		// After a failed reconnect, period is multiplied by BackoffFactor up to BackoffMax.
+		// On successful reconnect, period resets to ReconnectPeriod.
+		ReconnectBackoffMin    time.Duration `env:"LB_API_RECONNECT_BACKOFF_MIN" yaml:"reconnect_backoff_min" default:"10s"`
+		ReconnectBackoffMax    time.Duration `env:"LB_API_RECONNECT_BACKOFF_MAX" yaml:"reconnect_backoff_max" default:"5m"`
+		ReconnectBackoffFactor float64       `env:"LB_API_RECONNECT_BACKOFF_FACTOR" yaml:"reconnect_backoff_factor" default:"2"`
 	}
 
 	ClientOption func(*Client)
@@ -116,10 +123,20 @@ func NewClient(cfg ClientConfig, log *slog.Logger, opts ...ClientOption) *Client
 	if cfg.Timeout <= 0 {
 		cfg.Timeout = 5 * time.Second
 	}
+	if cfg.ReconnectBackoffMin <= 0 {
+		cfg.ReconnectBackoffMin = 10 * time.Second
+	}
+	if cfg.ReconnectBackoffMax <= 0 {
+		cfg.ReconnectBackoffMax = 5 * time.Minute
+	}
+	if cfg.ReconnectBackoffFactor <= 0 {
+		cfg.ReconnectBackoffFactor = 2
+	}
 
 	api := &Client{
-		cfg: cfg,
-		log: log,
+		cfg:                    cfg,
+		log:                    log,
+		currentReconnectPeriod: cfg.ReconnectBackoffMin,
 	}
 
 	for _, opt := range opts {
@@ -165,7 +182,7 @@ func (api *Client) connectionWatchdog(top context.Context) {
 		case <-api.reconnectTimer.C:
 			api.checkAndReconnect(top)
 
-			api.reconnectTimer.Reset(api.cfg.ReconnectPeriod)
+			api.reconnectTimer.Reset(api.currentReconnectPeriod)
 		}
 	}
 }
@@ -176,10 +193,11 @@ func (api *Client) checkAndReconnect(top context.Context) {
 
 	if api.client != nil {
 		if _, err := api.GetJAPIVersion(ctx); err != nil {
-			api.log.Warn("LANBilling api call error", slog.Int("fails", api.fails), slog.Any("error", err))
+			api.log.Warn("LANBilling api ping failed", slog.Int("fails", api.fails), slog.Any("error", err))
 			api.fails++
 		} else {
 			api.fails = 0
+			api.currentReconnectPeriod = api.cfg.ReconnectBackoffMin
 		}
 	}
 
@@ -195,12 +213,21 @@ func (api *Client) checkAndReconnect(top context.Context) {
 
 	if err := api.ConnectAndLogin(ctx); err != nil {
 		api.log.Warn("cannot reconnect client", slog.Any("error", err))
-		api.fails = 0 // сбрасываем чтобы не спамить реконнектами
+		// Экспоненциальный бэкофф
+		api.currentReconnectPeriod = time.Duration(float64(api.currentReconnectPeriod) * api.cfg.ReconnectBackoffFactor)
+		if api.currentReconnectPeriod > api.cfg.ReconnectBackoffMax {
+			api.currentReconnectPeriod = api.cfg.ReconnectBackoffMax
+		}
+		api.log.Info("next reconnect attempt", slog.Duration("after", api.currentReconnectPeriod))
+		api.fails = 0
 		return
 	}
 
+	api.log.Info("reconnected to LANBilling")
+
 	if len(api.subscriptions) == 0 {
 		api.fails = 0
+		api.currentReconnectPeriod = api.cfg.ReconnectBackoffMin
 		return
 	}
 
@@ -210,7 +237,7 @@ func (api *Client) checkAndReconnect(top context.Context) {
 	}
 
 	api.fails = 0
-
+	api.currentReconnectPeriod = api.cfg.ReconnectBackoffMin
 }
 
 // Close all connections to server and clear subscriptions

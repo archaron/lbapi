@@ -174,12 +174,13 @@ func (api *Client) checkAndReconnect(top context.Context) {
 	ctx, cancel := context.WithTimeout(top, api.cfg.Timeout)
 	defer cancel()
 
-	if _, err := api.GetJAPIVersion(ctx); err != nil {
-		api.log.Warn("LANBilling api call error", slog.Int("fails", api.fails), slog.Any("error", err))
-		api.fails++
-	} else {
-		// reset fails counter
-		api.fails = 0
+	if api.client != nil {
+		if _, err := api.GetJAPIVersion(ctx); err != nil {
+			api.log.Warn("LANBilling api call error", slog.Int("fails", api.fails), slog.Any("error", err))
+			api.fails++
+		} else {
+			api.fails = 0
+		}
 	}
 
 	if api.fails <= api.cfg.MaxFails {
@@ -194,6 +195,7 @@ func (api *Client) checkAndReconnect(top context.Context) {
 
 	if err := api.ConnectAndLogin(ctx); err != nil {
 		api.log.Warn("cannot reconnect client", slog.Any("error", err))
+		api.fails = 0 // сбрасываем чтобы не спамить реконнектами
 		return
 	}
 

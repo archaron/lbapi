@@ -120,9 +120,6 @@ func defaultConnector(api *Client) {
 
 		if api.client == nil {
 			api.client = &rpcClient{c: jrpc2.NewClient(channel.Line(conn, conn), &jrpc2.ClientOptions{
-				Logger: func(text string) {
-					api.log.Debug("API: " + text)
-				},
 				OnNotify:   api.hookOnNotify,
 				OnCallback: api.onCallback,
 				OnCancel:   api.hookOnCancel,

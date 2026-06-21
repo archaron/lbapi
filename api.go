@@ -66,6 +66,7 @@ type (
 		Username string `env:"LB_API_USERNAME" yaml:"username" usage:"LANBilling API username "` // Agent username
 		Password string `env:"LB_API_PASSWORD" yaml:"password" usage:"LANBilling API password"`  // Agent password
 
+		Debug    bool          `env:"LB_API_DEBUG" yaml:"debug"`                                 // Log all JSON-RPC traffic
 		MaxFails int           `env:"LB_API_MAX_FAILS" yaml:"max_fails" default:"5"` // Maximum reconnect fails before reconnect
 		Timeout  time.Duration `env:"LB_API_TIMEOUT" yaml:"timeout" default:"5s"`    // (re)Connect timeout
 

@@ -65,7 +65,7 @@ func TestLBEventBlockVg_String(t *testing.T) {
 		RequestBy:   40,
 		VgID:        50,
 	}
-	expected := "Запланировать изменение статуса УЗ: VgID:50 [" + blockRequest.String() + "] №Записи: 30, Когда: " + nowTime.String() + ", ЗапросОт: 40"
+	expected := "Запланировать изменение статуса УЗ: VgID:50 [" + blockRequest.String() + "] №Записи: 30, Когда: " + nowTime.String() + ", ЗапросОт: 40, ПерваяАктивация: false"
 	require.Equal(t, expected, event.String())
 }
 
@@ -149,5 +149,86 @@ func TestLBEventChangeAgentOption_String(t *testing.T) {
 		Name:    "OptionName",
 	}
 	expected := "ChangeAgentOption: AgentID: 101, Option: OptionName"
+	require.Equal(t, expected, event.String())
+}
+
+func TestLBEventCloseAgreement_String(t *testing.T) {
+	event := LBEventCloseAgreement{
+		AgrmID:    388,
+		CloseDate: "2026-06-19 09:52:35",
+	}
+	expected := "Закрыть договор: AgrmID:388, ДатаЗакрытия:2026-06-19 09:52:35"
+	require.Equal(t, expected, event.String())
+}
+
+func TestLBEventCloseAgreement_JSONSerialization(t *testing.T) {
+	raw := `{"agrm_id":388,"close_date":"2026-06-19 09:52:35"}`
+	var event LBEventCloseAgreement
+	require.NoError(t, json.Unmarshal([]byte(raw), &event))
+	require.Equal(t, 388, event.AgrmID)
+	require.Equal(t, "2026-06-19 09:52:35", event.CloseDate)
+
+	data, err := json.Marshal(event)
+	require.NoError(t, err)
+	var result LBEventCloseAgreement
+	require.NoError(t, json.Unmarshal(data, &result))
+	require.Equal(t, event, result)
+}
+
+func TestLBEventBlockVg_JSONSerialization(t *testing.T) {
+	raw := `{"blk_req":10,"block_rasp_id":702,"change_time":"2026-06-19 09:52:35","first_activation":false,"old_block":0,"request_by":3,"vg_block_history_id":680,"vgid":424}`
+	var event LBEventBlockVg
+	require.NoError(t, json.Unmarshal([]byte(raw), &event))
+	require.Equal(t, types.LBBlockRequest(10), event.BlkReq)
+	require.Equal(t, 702, event.BlockRaspID)
+	require.Equal(t, false, event.FirstActivation)
+	require.Equal(t, 0, event.OldBlock)
+	require.Equal(t, 3, event.RequestBy)
+	require.Equal(t, 680, event.VgBlockHistoryID)
+	require.Equal(t, 424, event.VgID)
+}
+
+func TestLBEventBlockVgTask_JSONSerialization(t *testing.T) {
+	raw := `{"blk_req":10,"change_time":"2026-06-19 09:52:35","recordid":702,"vgid":424}`
+	var event LBEventBlockVgTask
+	require.NoError(t, json.Unmarshal([]byte(raw), &event))
+	require.Equal(t, types.LBBlockRequest(10), event.BlkReq)
+	require.Equal(t, "2026-06-19 09:52:35", event.ChangeTime)
+	require.Equal(t, 702, event.RecordID)
+	require.Equal(t, 424, event.VgID)
+}
+
+func TestLBEventDelRadiusVgroup_String(t *testing.T) {
+	event := LBEventDelRadiusVgroup{
+		VgID: 424,
+	}
+	expected := "Удалить RADIUS-группу: VgID:424"
+	require.Equal(t, expected, event.String())
+}
+
+func TestLBEventDelRadiusVgroup_JSONSerialization(t *testing.T) {
+	raw := `{"vg_id":424}`
+	var event LBEventDelRadiusVgroup
+	require.NoError(t, json.Unmarshal([]byte(raw), &event))
+	require.Equal(t, 424, event.VgID)
+
+	data, err := json.Marshal(event)
+	require.NoError(t, err)
+	var result LBEventDelRadiusVgroup
+	require.NoError(t, json.Unmarshal(data, &result))
+	require.Equal(t, event, result)
+}
+
+func TestLBEventPayment_String(t *testing.T) {
+	event := LBEventPayment{
+		PaymentID:   10282,
+		AgrmID:      72,
+		Amount:      45.01,
+		Balance:     154.70,
+		CashCode:    2,
+		Payclass:    8,
+		IsCancelled: false,
+	}
+	expected := "Платеж: PaymentID:10282, AgrmID:72, Сумма:45.01, Баланс:154.70, Касса:2, Класс:8, Отмена:false"
 	require.Equal(t, expected, event.String())
 }

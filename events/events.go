@@ -140,6 +140,8 @@ type (
 	}
 
 	LBEventCloseAgreement struct {
+		AgrmID    int    `json:"agrm_id"`    // ID договора
+		CloseDate string `json:"close_date"` // Дата закрытия договора
 	}
 
 	LBEventChangeTariffVG struct {
@@ -231,6 +233,7 @@ type (
 	}
 
 	LBEventChangeStaff struct {
+		RecordID int `json:"record_id"`
 	}
 
 	LBEventChangeTimeDiscount struct {
@@ -258,20 +261,25 @@ type (
 	}
 
 	LBEventBlockVg struct {
-		BlkReq      types.LBBlockRequest `json:"blk_req"`
-		BlockRaspID int                  `json:"block_rasp_id"`
-		ChangeTime  *types.LBTime        `json:"change_time"`
-		RequestBy   int                  `json:"request_by"`
-		VgID        int                  `json:"vgid"`
+		BlkReq            types.LBBlockRequest `json:"blk_req"`
+		BlockRaspID       int                  `json:"block_rasp_id"`
+		ChangeTime        *types.LBTime        `json:"change_time"`
+		FirstActivation   bool                 `json:"first_activation"`    // Первая активация УЗ
+		OldBlock          int                  `json:"old_block"`           // Предыдущий статус блокировки
+		RequestBy         int                  `json:"request_by"`
+		VgBlockHistoryID  int                  `json:"vg_block_history_id"` // ID записи в истории блокировок
+		VgID              int                  `json:"vgid"`
 	}
 
 	LBEventBlockVgTask struct {
-		BlkReq   types.LBBlockRequest `json:"blk_req"`
-		RecordID int                  `json:"recordid"`
-		VgID     int                  `json:"vgid"`
+		BlkReq     types.LBBlockRequest `json:"blk_req"`
+		ChangeTime string               `json:"change_time"` // Время изменения статуса
+		RecordID   int                  `json:"recordid"`
+		VgID       int                  `json:"vgid"`
 	}
 
 	LBEventDelRadiusVgroup struct {
+		VgID int `json:"vg_id"` // ID удаляемой виртуальной группы
 	}
 
 	LBEventChangeTariff struct {
@@ -361,12 +369,14 @@ func (L LBEventChangeSegment) String() string {
 }
 
 func (L LBEventBlockVgTask) String() string {
+	if L.ChangeTime != "" {
+		return fmt.Sprintf("Изменить статус УЗ: VgID:%d [%s] №Записи: %d, Когда: %s", L.VgID, L.BlkReq, L.RecordID, L.ChangeTime)
+	}
 	return fmt.Sprintf("Изменить статус УЗ: VgID:%d [%s] №Записи: %d", L.VgID, L.BlkReq, L.RecordID)
 }
 
 func (L LBEventBlockVg) String() string {
-
-	return fmt.Sprintf("Запланировать изменение статуса УЗ: VgID:%d [%s] №Записи: %d, Когда: %s, ЗапросОт: %d", L.VgID, L.BlkReq, L.BlockRaspID, L.ChangeTime, L.RequestBy)
+	return fmt.Sprintf("Запланировать изменение статуса УЗ: VgID:%d [%s] №Записи: %d, Когда: %s, ЗапросОт: %d, ПерваяАктивация: %t", L.VgID, L.BlkReq, L.BlockRaspID, L.ChangeTime, L.RequestBy, L.FirstActivation)
 }
 
 func (L LBEventChangeVgNetwork) String() string {
@@ -396,4 +406,20 @@ func (L LBEventChangeVgroup) String() string {
 
 func (L LBEventChangeAgentOption) String() string {
 	return fmt.Sprintf("ChangeAgentOption: AgentID: %d, Option: %s", L.AgentID, L.Name)
+}
+
+// String возвращает описание события закрытия договора.
+func (L LBEventCloseAgreement) String() string {
+	return fmt.Sprintf("Закрыть договор: AgrmID:%d, ДатаЗакрытия:%s", L.AgrmID, L.CloseDate)
+}
+
+// String возвращает описание события удаления виртуальной группы из RADIUS.
+func (L LBEventDelRadiusVgroup) String() string {
+	return fmt.Sprintf("Удалить RADIUS-группу: VgID:%d", L.VgID)
+}
+
+// String возвращает описание события платежа.
+func (L LBEventPayment) String() string {
+	return fmt.Sprintf("Платеж: PaymentID:%d, AgrmID:%d, Сумма:%.2f, Баланс:%.2f, Касса:%d, Класс:%d, Отмена:%t",
+		L.PaymentID, L.AgrmID, L.Amount, L.Balance, L.CashCode, L.Payclass, L.IsCancelled)
 }

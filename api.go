@@ -120,12 +120,18 @@ func defaultConnector(api *Client) {
 		}
 
 		if api.client == nil {
-			api.client = &rpcClient{c: jrpc2.NewClient(channel.Line(conn, conn), &jrpc2.ClientOptions{
+			opts := &jrpc2.ClientOptions{
 				OnNotify:   api.hookOnNotify,
 				OnCallback: api.onCallback,
 				OnCancel:   api.hookOnCancel,
 				OnStop:     api.hookOnStop,
-			})}
+			}
+			if api.cfg.Debug {
+				opts.Logger = func(text string) {
+					api.log.Debug("jrpc: " + text)
+				}
+			}
+			api.client = &rpcClient{c: jrpc2.NewClient(channel.Line(conn, conn), opts)}
 		}
 
 		if api.cfg.ReconnectPeriod > 0 && api.reconnectTimer == nil {
@@ -220,6 +226,9 @@ func (api *Client) checkAndReconnect(top context.Context) {
 			api.fails = 0
 			api.currentReconnectPeriod = api.cfg.ReconnectBackoffMin
 		}
+	} else {
+		// Клиент не существует — нужен немедленный реконнект
+		api.fails = api.cfg.MaxFails + 1
 	}
 
 	if api.fails <= api.cfg.MaxFails {
@@ -271,15 +280,11 @@ func (api *Client) Close() error {
 	}
 
 	if api.connection != nil {
-		if err := api.connection.Close(); err != nil {
-			return err
-		}
+		_ = api.connection.Close()
 	}
 
 	api.connection = nil
-	if api.client != nil {
-		api.client.c = nil
-	}
+	api.client = nil
 	if api.eventsChannel != nil {
 		close(api.eventsChannel)
 		api.eventsChannel = nil
@@ -340,6 +345,12 @@ func (api *Client) onCallback(ctx context.Context, request *jrpc2.Request) (inte
 
 	if err := request.UnmarshalParams(note); err != nil {
 		return nil, err
+	}
+
+	if api.cfg.Debug && len(note.Params) > 0 {
+		api.log.Debug("lb event data",
+			slog.String("event", note.Message),
+			slog.String("params", string(note.Params)))
 	}
 
 	var x events.EventInterface

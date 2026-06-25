@@ -358,6 +358,8 @@ func (api *Client) onCallback(ctx context.Context, request *jrpc2.Request) (inte
 	switch note.Message {
 	case events.CreateAgreementEvent:
 		x = &events.LBEventCreateAgreement{}
+	case events.ChangeAgreementEvent:
+		x = &events.LBEventChangeAgreement{}
 	case events.CloseAgreementEvent:
 		x = &events.LBEventCloseAgreement{}
 	case events.ChangeTariffVGEvent:

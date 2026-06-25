@@ -8,6 +8,7 @@ import (
 
 const (
 	CreateAgreementEvent                        = "create_agreement"
+	ChangeAgreementEvent                        = "change_agreement"
 	CloseAgreementEvent                         = "close_agreement"
 	ChangeTariffVGEvent                         = "change_tariff_vg"
 	DelAgentEvent                               = "del_agent"
@@ -67,6 +68,7 @@ const (
 
 var AllLBEvents = []LBEvent{
 	CreateAgreementEvent,
+		ChangeAgreementEvent,
 	CloseAgreementEvent,
 	ChangeTariffVGEvent,
 	DelAgentEvent,
@@ -137,6 +139,9 @@ type (
 	Channel chan EventInterface
 
 	LBEventCreateAgreement struct {
+	}
+
+	LBEventChangeAgreement struct {
 	}
 
 	LBEventCloseAgreement struct {
@@ -283,6 +288,8 @@ type (
 	}
 
 	LBEventChangeTariff struct {
+		TarID int  `json:"tar_id"` // ID изменённого тарифа
+		Ins   bool `json:"ins"`    // true = создан новый тариф
 	}
 
 	LBEventChangeSizeShape struct {

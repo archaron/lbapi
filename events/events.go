@@ -171,6 +171,7 @@ type (
 	}
 
 	LBEventSetDevice struct {
+		DeviceID int `json:"device_id"` // ID устройства
 	}
 
 	LBEventDelDevice struct {
@@ -180,6 +181,8 @@ type (
 	}
 
 	LBEventChangeCategory struct {
+		CatIdx int `json:"cat_idx"` // Индекс категории
+		TarID  int `json:"tar_id"`  // ID тарифа
 	}
 
 	LBEventChangeCategoryModifier struct {
@@ -190,6 +193,8 @@ type (
 	}
 
 	LBEventChangeDeviceGroupMember struct {
+		DeviceID int `json:"device_id"` // ID устройства
+		GroupID  int `json:"group_id"`  // ID группы
 	}
 
 	LBEventChangeDeviceGroupsOption struct {
@@ -199,6 +204,7 @@ type (
 	}
 
 	LBEventChangeDictionary struct {
+		RecordID int `json:"record_id"` // ID записи справочника
 	}
 
 	LBEventDeleteDictionary struct {
@@ -227,6 +233,7 @@ type (
 	}
 
 	LBEventChangeVgPort struct {
+		PortID int `json:"port_id"` // ID порта
 	}
 
 	LBEventChangeRadiusAttr struct {

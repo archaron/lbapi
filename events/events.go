@@ -230,6 +230,7 @@ type (
 	}
 
 	LBEventChangeRadiusAttr struct {
+		RecordID int `json:"record_id"` // ID изменённой записи radius_attrs
 	}
 
 	LBEventChangeSegment struct {

@@ -183,7 +183,7 @@ type (
 	}
 
 	LBEventChangeCategoryModifier struct {
-		VgID int `json:"vg_id"`
+		RecordID int `json:"record_id"` // ID записи модификатора (0 = глобальное изменение)
 	}
 
 	LBEventChangeDeviceGroup struct {

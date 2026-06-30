@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"strings"
 	"time"
 
 	"github.com/creachadair/jrpc2"
@@ -222,6 +223,10 @@ func (api *Client) checkAndReconnect(top context.Context) {
 		if _, err := api.GetJAPIVersion(ctx); err != nil {
 			api.log.Warn("LANBilling api ping failed", slog.Int("fails", api.fails), slog.Any("error", err))
 			api.fails++
+				// connection reset — мёртвое TCP-соединение, реконнект сразу
+				if strings.Contains(err.Error(), "connection reset") {
+					api.fails = api.cfg.MaxFails + 1
+				}
 		} else {
 			api.fails = 0
 			api.currentReconnectPeriod = api.cfg.ReconnectBackoffMin
@@ -231,7 +236,7 @@ func (api *Client) checkAndReconnect(top context.Context) {
 		api.fails = api.cfg.MaxFails + 1
 	}
 
-	if api.fails <= api.cfg.MaxFails {
+	if api.fails < api.cfg.MaxFails {
 		return
 	}
 
@@ -270,13 +275,11 @@ func (api *Client) checkAndReconnect(top context.Context) {
 	api.currentReconnectPeriod = api.cfg.ReconnectBackoffMin
 }
 
-// Close all connections to server and clear subscriptions
+// Close all connections to server and clear subscriptions.
+// Даже при ошибке закрытия очищает состояние для возможности переподключения.
 func (api *Client) Close() error {
-
 	if api.client != nil {
-		if err := api.client.Close(); err != nil {
-			return err
-		}
+		_ = api.client.Close() // ошибка при закрытии мёртвого соединения — неважно
 	}
 
 	if api.connection != nil {

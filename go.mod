@@ -11,6 +11,7 @@ require (
 
 require (
 	github.com/creachadair/mds v0.23.0 // indirect
+	github.com/go-routeros/routeros/v3 v3.0.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.2.1 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
